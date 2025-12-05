@@ -24,13 +24,13 @@ let lastScroll = 0;
 
 window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;
-    
+
     if (currentScroll > 100) {
         navbar.classList.add('scrolled');
     } else {
         navbar.classList.remove('scrolled');
     }
-    
+
     lastScroll = currentScroll;
 });
 
@@ -120,7 +120,7 @@ const forms = {
 Object.entries(forms).forEach(([type, form]) => {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        
+
         // Get form data
         const formData = new FormData(form);
         const data = {
@@ -130,7 +130,7 @@ Object.entries(forms).forEach(([type, form]) => {
             whatsapp: formData.get('whatsapp'),
             goal: formData.get('goal')
         };
-        
+
         // Add role-specific field
         if (type === 'founder') {
             data.company = formData.get('company');
@@ -143,33 +143,33 @@ Object.entries(forms).forEach(([type, form]) => {
         } else if (type === 'host') {
             data.community = formData.get('community');
         }
-        
+
         // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(data.email)) {
             showNotification('Please enter a valid email address', 'error');
             return;
         }
-        
+
         // Validate WhatsApp number (basic check)
         if (data.whatsapp.length < 10) {
             showNotification('Please enter a valid WhatsApp number', 'error');
             return;
         }
-        
+
         // Log to console (in production, send to backend)
         console.log('Waitlist Signup:', data);
-        
+
         // Show success message
         showNotification('🎉 Success! You\'re on the waitlist. We\'ll be in touch soon!', 'success');
-        
+
         // Reset form and close modal
         form.reset();
         setTimeout(() => {
             modals[type].classList.remove('active');
             document.body.style.overflow = 'auto';
         }, 2000);
-        
+
         // In production, you would send this data to your backend:
         // fetch('/api/waitlist', {
         //     method: 'POST',
@@ -188,12 +188,12 @@ function showNotification(message, type = 'success') {
     if (existing) {
         existing.remove();
     }
-    
+
     // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.textContent = message;
-    
+
     // Add styles
     notification.style.cssText = `
         position: fixed;
@@ -210,9 +210,9 @@ function showNotification(message, type = 'success') {
         animation: slideInRight 0.3s ease;
         max-width: 400px;
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     // Remove after 3 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOutRight 0.3s ease';
@@ -289,7 +289,7 @@ if (chordyCharacter && speechBubble) {
     chordyCharacter.addEventListener('mouseenter', () => {
         chordyCharacter.style.animation = 'floatCharacter 1s ease-in-out';
     });
-    
+
     // Show speech bubble after page load
     setTimeout(() => {
         speechBubble.style.opacity = '1';
@@ -297,21 +297,49 @@ if (chordyCharacter && speechBubble) {
 }
 
 // ===================================
-// DYNAMIC BACKGROUND NODES
+// DYNAMIC BACKGROUND NODES & INTERACTION
 // ===================================
 function createAdditionalNodes() {
     const animatedBg = document.querySelector('.animated-bg');
-    const nodeCount = 3; // Add 3 more nodes
-    
+    const nodeCount = 5; // Increased node count
+
     for (let i = 0; i < nodeCount; i++) {
         const node = document.createElement('div');
         node.className = 'node';
         node.style.top = `${Math.random() * 100}%`;
         node.style.left = `${Math.random() * 100}%`;
         node.style.animationDelay = `${Math.random() * 10}s`;
+        node.style.opacity = Math.random() * 0.5 + 0.3; // Random opacity
         animatedBg.appendChild(node);
     }
 }
+
+// Mouse interaction for background
+document.addEventListener('mousemove', (e) => {
+    const nodes = document.querySelectorAll('.node');
+    const lines = document.querySelectorAll('.connection-line');
+
+    const mouseX = e.clientX / window.innerWidth;
+    const mouseY = e.clientY / window.innerHeight;
+
+    nodes.forEach((node, index) => {
+        const depth = (index % 5) + 1;
+        const moveX = (mouseX - 0.5) * depth * 30; // Movement range
+        const moveY = (mouseY - 0.5) * depth * 30;
+
+        node.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    });
+
+    lines.forEach((line, index) => {
+        const depth = (index % 3) + 1;
+        const moveX = (mouseX - 0.5) * depth * 20;
+        const moveY = (mouseY - 0.5) * depth * 20;
+
+        // Keep the rotation but add translation
+        const rotation = index === 0 ? 45 : index === 1 ? -30 : 15;
+        line.style.transform = `rotate(${rotation}deg) translate(${moveX}px, ${moveY}px)`;
+    });
+});
 
 // Create additional nodes on load
 window.addEventListener('load', createAdditionalNodes);
@@ -326,7 +354,7 @@ roleCards.forEach(card => {
         // Add subtle scale effect
         card.style.transform = 'translateY(-8px) scale(1.02)';
     });
-    
+
     card.addEventListener('mouseleave', () => {
         card.style.transform = 'translateY(0) scale(1)';
     });
@@ -341,7 +369,7 @@ window.addEventListener('scroll', () => {
     if (scrollTimeout) {
         window.cancelAnimationFrame(scrollTimeout);
     }
-    
+
     scrollTimeout = window.requestAnimationFrame(() => {
         // Scroll-based animations can be added here
     });
@@ -357,7 +385,7 @@ function trapFocus(modal) {
     );
     const firstFocusable = focusableElements[0];
     const lastFocusable = focusableElements[focusableElements.length - 1];
-    
+
     modal.addEventListener('keydown', (e) => {
         if (e.key === 'Tab') {
             if (e.shiftKey) {
@@ -397,7 +425,7 @@ console.log('%cInterested in our tech? We\'re hiring! Email: careers@chordy.ai',
 // Track page views and interactions
 function trackEvent(eventName, eventData = {}) {
     console.log('Event:', eventName, eventData);
-    
+
     // In production, send to analytics service:
     // gtag('event', eventName, eventData);
     // or
