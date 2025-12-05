@@ -1,0 +1,36 @@
+# Chordy.ai Landing Page - Task Breakdown
+
+## Project Setup
+- [/] Create project directory structure
+- [ ] Set up HTML foundation with SEO optimization
+- [ ] Create CSS design system with brand colors and typography
+
+## Design System & Assets
+- [ ] Generate Chordy AI character illustration
+- [ ] Generate supporting icons and graphics
+- [ ] Implement animated background (nodes/connection lines)
+- [ ] Create WhatsApp UI preview graphic
+
+## Core Sections Implementation
+- [ ] Hero Section with animated Chordy character
+- [ ] Problem Section (6 cards)
+- [ ] Solution Section (3-step layout)
+- [ ] How It Works Section (4 horizontal tiles)
+- [ ] Role Selection Waitlist (5 cards with modals)
+- [ ] Trust & Safety Section
+- [ ] Future Product Roadmap
+- [ ] Final CTA Section
+
+## Interactive Features
+- [ ] Sticky navigation with CTA button
+- [ ] Smooth scroll animations
+- [ ] Micro-interactions and hover effects
+- [ ] Modal forms for 5 user segments
+- [ ] Scroll-to-section functionality
+- [ ] Responsive design (desktop, tablet, mobile)
+
+## Polish & Verification
+- [ ] Test all animations and interactions
+- [ ] Verify responsive behavior
+- [ ] Test modal forms
+- [ ] Final visual polish and optimization

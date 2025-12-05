@@ -1,0 +1,14 @@
+# Task: Build Tanishka Khandelwal's Portfolio
+
+- [x] Initialize Vite + React project <!-- id: 0 -->
+- [x] Configure Design System (Fonts, Colors, Global CSS) <!-- id: 1 -->
+- [x] Create Layout Components (Navbar, Footer) <!-- id: 2 -->
+- [x] Implement Hero Section <!-- id: 3 -->
+- [x] Implement About Section <!-- id: 4 -->
+- [x] Implement Experience Section <!-- id: 5 -->
+- [x] Implement Projects Section <!-- id: 6 -->
+- [x] Implement Skills Section <!-- id: 7 -->
+- [x] Implement Achievements & Responsibilities Section <!-- id: 8 -->
+- [/] Implement Contact Section <!-- id: 9 -->
+- [ ] Add animations and micro-interactions <!-- id: 10 -->
+- [ ] Verify responsiveness and polish <!-- id: 11 -->
