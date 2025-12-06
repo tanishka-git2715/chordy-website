@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import chordyLogo from "@/assets/logo.png";
+import heroLogo from "@/assets/hero-logo.png";
+
 
 type Category = {
     id: string;
@@ -49,23 +50,40 @@ const Index = () => {
                             className="w-full max-w-md"
                         >
                             <div className="bg-white rounded-3xl shadow-xl shadow-emerald-100/50 p-8 border border-gray-100">
-                                {/* Logo */}
-                                <div className="flex justify-center mb-6">
-                                    <img
-                                        src={chordyLogo}
+                                {/* Logo and Title Row */}
+                                <div className="flex flex-row items-center justify-center gap-4 mb-6">
+                                    <motion.img
+                                        src={heroLogo}
                                         alt="Chordy.ai"
-                                        className="w-16 h-16 rounded-2xl object-cover"
+                                        className="w-16 h-16 object-contain"
+                                        animate={{
+                                            y: [-5, 5, -5],
+                                        }}
+                                        transition={{
+                                            duration: 4,
+                                            repeat: Infinity,
+                                            ease: "easeInOut",
+                                        }}
                                     />
+                                    <h1 className="text-4xl font-display font-bold text-gray-900 tracking-tight">
+                                        Chordy
+                                    </h1>
                                 </div>
 
                                 {/* Header Message */}
                                 <div className="text-center mb-8">
-                                    <h1 className="text-2xl font-display font-semibold text-gray-900 mb-3 tracking-tight">
-                                        Hey, I'm Chordy, your AI Superconnector.
-                                    </h1>
-                                    <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                                        Join the waiting list for Chordy.ai — your upcoming AI Superconnector. Be one of the first to access our networking agent that helps you find the right people, make warm introductions, and grow your opportunities effortlessly.
-                                    </p>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.2 }}
+                                    >
+                                        <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 mb-2">
+                                            Hi, I'm your AI superconnector.
+                                        </h2>
+                                        <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                                            Connecting you to the right people at the right time.
+                                        </p>
+                                    </motion.div>
                                     <p className="text-gray-800 text-base font-medium">
                                         How would you describe yourself?
                                     </p>
@@ -101,9 +119,9 @@ const Index = () => {
                                 {/* Logo */}
                                 <div className="flex justify-center mb-6">
                                     <img
-                                        src={chordyLogo}
+                                        src={heroLogo}
                                         alt="Chordy.ai"
-                                        className="w-16 h-16 rounded-2xl object-cover"
+                                        className="w-16 h-16 object-contain"
                                     />
                                 </div>
 
@@ -213,9 +231,9 @@ const Index = () => {
                                 {/* Logo */}
                                 <div className="flex justify-center mb-6">
                                     <img
-                                        src={chordyLogo}
+                                        src={heroLogo}
                                         alt="Chordy.ai"
-                                        className="w-16 h-16 rounded-2xl object-cover"
+                                        className="w-16 h-16 object-contain"
                                     />
                                 </div>
 
