@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Linkedin, Instagram, Mail, Twitter } from "lucide-react";
 import heroLogo from "@/assets/hero-logo.png";
 
 
@@ -7,6 +8,44 @@ type Category = {
     id: string;
     label: string;
 };
+
+const SocialLinks = () => (
+    <div className="flex flex-col items-center gap-3 mt-8 pt-6 border-t border-gray-100">
+        <div className="flex justify-center gap-6">
+            <a
+                href="https://www.linkedin.com/company/chordy-ai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#0077b5] hover:opacity-80 transition-opacity transform hover:scale-110"
+            >
+                <Linkedin className="w-5 h-5" />
+            </a>
+            <a
+                href="https://www.instagram.com/chordy.ai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#E4405F] hover:opacity-80 transition-opacity transform hover:scale-110"
+            >
+                <Instagram className="w-5 h-5" />
+            </a>
+            <a
+                href="https://x.com/chordy_ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-black hover:opacity-80 transition-opacity transform hover:scale-110"
+            >
+                <Twitter className="w-5 h-5" />
+            </a>
+        </div>
+        <a
+            href="mailto:team@chordy.ai"
+            className="flex items-center gap-2 text-sm text-gray-500 hover:text-emerald-600 transition-colors"
+        >
+            <Mail className="w-4 h-4" />
+            <span>team@chordy.ai</span>
+        </a>
+    </div>
+);
 
 const categories: Category[] = [
     { id: "founder", label: "I'm a Startup Founder" },
@@ -101,7 +140,7 @@ const Index = () => {
                                         </button>
                                     ))}
                                 </div>
-
+                                <SocialLinks />
                             </div>
                         </motion.div>
                     )}
@@ -215,6 +254,7 @@ const Index = () => {
                                 >
                                     ← Go back
                                 </button>
+                                <SocialLinks />
                             </div>
                         </motion.div>
                     )}
@@ -260,24 +300,14 @@ const Index = () => {
                                 <p className="text-gray-600">
                                     Welcome to Chordy.ai — we'll be in touch soon.
                                 </p>
+                                <SocialLinks />
                             </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
             </div>
 
-            {/* Footer */}
-            <footer className="py-6 text-center">
-                <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
-                    <a href="#" className="hover:text-gray-700 transition-colors">
-                        Terms
-                    </a>
-                    <span>•</span>
-                    <a href="#" className="hover:text-gray-700 transition-colors">
-                        Privacy
-                    </a>
-                </div>
-            </footer>
+
         </div>
     );
 };

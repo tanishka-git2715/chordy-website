@@ -22,6 +22,7 @@
   "homepage": "https://github.com/tanishka-git2715/Chordy-Website#readme",
   "dependencies": {
     "framer-motion": "^12.23.25",
+    "lucide-react": "^0.556.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1"
   },
