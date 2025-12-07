@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/tanishka-git2715/Chordy-Website#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.86.2",
     "@vercel/kv": "^3.0.0",
     "framer-motion": "^12.23.25",
     "lucide-react": "^0.556.0",
