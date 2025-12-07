@@ -61,7 +61,8 @@ const Index = () => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
-        companyRole: "",
+        categorySpecific: "",
+        linkedinId: "",
     });
 
     const handleCategorySelect = (category: Category) => {
@@ -223,19 +224,93 @@ const Index = () => {
                                         />
                                     </div>
 
+                                    {/* Category-specific field */}
+                                    {selectedCategory?.id === "founder" && (
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                                Company{" "}
+                                                <span className="text-gray-400 font-normal">(optional)</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={formData.categorySpecific}
+                                                onChange={(e) =>
+                                                    setFormData({ ...formData, categorySpecific: e.target.value })
+                                                }
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all text-gray-900"
+                                                placeholder="Your company name"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {selectedCategory?.id === "professional" && (
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                                Company / Role{" "}
+                                                <span className="text-gray-400 font-normal">(optional)</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={formData.categorySpecific}
+                                                onChange={(e) =>
+                                                    setFormData({ ...formData, categorySpecific: e.target.value })
+                                                }
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all text-gray-900"
+                                                placeholder="Your company or role"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {selectedCategory?.id === "student" && (
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                                University{" "}
+                                                <span className="text-gray-400 font-normal">(optional)</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={formData.categorySpecific}
+                                                onChange={(e) =>
+                                                    setFormData({ ...formData, categorySpecific: e.target.value })
+                                                }
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all text-gray-900"
+                                                placeholder="Your university"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {selectedCategory?.id === "host" && (
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                                Event / Community Name{" "}
+                                                <span className="text-gray-400 font-normal">(optional)</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={formData.categorySpecific}
+                                                onChange={(e) =>
+                                                    setFormData({ ...formData, categorySpecific: e.target.value })
+                                                }
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all text-gray-900"
+                                                placeholder="Your event or community name"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* LinkedIn ID field for all categories */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                            Company / Role{" "}
+                                            LinkedIn ID{" "}
                                             <span className="text-gray-400 font-normal">(optional)</span>
                                         </label>
                                         <input
                                             type="text"
-                                            value={formData.companyRole}
+                                            value={formData.linkedinId}
                                             onChange={(e) =>
-                                                setFormData({ ...formData, companyRole: e.target.value })
+                                                setFormData({ ...formData, linkedinId: e.target.value })
                                             }
                                             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all text-gray-900"
-                                            placeholder="Your company or role"
+                                            placeholder="linkedin.com/in/yourprofile"
                                         />
                                     </div>
 
