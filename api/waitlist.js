@@ -29,7 +29,12 @@ const initLocalDB = () => {
 
 // Check if Vercel KV is available
 const isKVAvailable = () => {
-    return process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN;
+    return !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+};
+
+// Check if running on Vercel
+const isVercel = () => {
+    return !!process.env.VERCEL;
 };
 
 // Helper function to get all waitlist entries
@@ -52,6 +57,14 @@ async function getAllEntries() {
                 entries = [];
             }
         } else {
+            // Safety check for Vercel deployment without KV
+            if (isVercel()) {
+                console.error('CRITICAL: Running on Vercel but KV is not configured.');
+                console.error('Please set KV_REST_API_URL and KV_REST_API_TOKEN in Vercel Project Settings.');
+                // Return empty array to verify the app doesn't crash, but data is missing
+                return [];
+            }
+
             // Use local file for development
             initLocalDB();
             try {
@@ -86,6 +99,13 @@ async function saveEntries(entries) {
             await kv.set('waitlist', entries);
             console.log('Saved to KV:', entries.length, 'entries');
         } else {
+            // Safety check for Vercel deployment without KV
+            if (isVercel()) {
+                const errorMsg = 'CRITICAL: Cannot save data. Vercel KV is not configured.';
+                console.error(errorMsg);
+                throw new Error(errorMsg);
+            }
+
             // Use local file for development
             initLocalDB();
             // Save as object to match backend/server.js structure
@@ -94,6 +114,7 @@ async function saveEntries(entries) {
         }
     } catch (error) {
         console.error('Error saving entries:', error);
+        throw error; // Propagate error to API handler
     }
 }
 
