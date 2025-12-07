@@ -1,15 +1,25 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join, dirname } from 'path';
 
 // Define local DB path relative to project root
 // We use process.cwd() because often in Vercel/Next/Node the CWD is the root
-const LOCAL_DB_FILE = join(process.cwd(), 'waitlist-local.json');
+const LOCAL_DB_FILE = join(process.cwd(), 'backend', 'waitlist.json');
 
 // Helper to initialize local DB if missing
 const initLocalDB = () => {
+    // Ensure directory exists
+    const dir = dirname(LOCAL_DB_FILE);
+    if (!existsSync(dir)) {
+        try {
+            mkdirSync(dir, { recursive: true });
+        } catch (err) {
+            console.error('Failed to create backend directory:', err);
+        }
+    }
+
     if (!existsSync(LOCAL_DB_FILE)) {
         try {
-            writeFileSync(LOCAL_DB_FILE, JSON.stringify([], null, 2));
+            writeFileSync(LOCAL_DB_FILE, JSON.stringify({ waitlist: [] }, null, 2));
             console.log('Initialized local DB file:', LOCAL_DB_FILE);
         } catch (err) {
             console.error('Failed to initialize local DB:', err);
@@ -46,7 +56,9 @@ async function getAllEntries() {
             initLocalDB();
             try {
                 const fileData = readFileSync(LOCAL_DB_FILE, 'utf8');
-                entries = JSON.parse(fileData);
+                const parsed = JSON.parse(fileData);
+                // Handle both array (legacy) and object (new) formats
+                entries = Array.isArray(parsed) ? parsed : (parsed.waitlist || []);
                 console.log('Retrieved from local file:', entries.length, 'entries');
             } catch (err) {
                 console.error('Error reading local DB:', err);
@@ -76,7 +88,8 @@ async function saveEntries(entries) {
         } else {
             // Use local file for development
             initLocalDB();
-            writeFileSync(LOCAL_DB_FILE, JSON.stringify(entries, null, 2));
+            // Save as object to match backend/server.js structure
+            writeFileSync(LOCAL_DB_FILE, JSON.stringify({ waitlist: entries }, null, 2));
             console.log('Saved to local file:', entries.length, 'entries');
         }
     } catch (error) {
