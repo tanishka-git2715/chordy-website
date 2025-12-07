@@ -28,7 +28,18 @@ const Admin = () => {
             const response = await fetch("/api/waitlist");
             const data = await response.json();
             if (data.success) {
-                setEntries(data.data);
+                // Map Supabase snake_case to camelCase if needed
+                const mappedEntries = data.data.map((entry: any) => ({
+                    id: entry.id,
+                    name: entry.name,
+                    email: entry.email,
+                    category: entry.category,
+                    categoryLabel: entry.category_label || entry.categoryLabel, // Handle both formats
+                    categorySpecific: entry.category_specific || entry.categorySpecific,
+                    linkedinId: entry.linkedin_id || entry.linkedinId,
+                    createdAt: entry.created_at || entry.createdAt
+                }));
+                setEntries(mappedEntries);
             }
         } catch (error) {
             console.error("Error fetching entries:", error);
