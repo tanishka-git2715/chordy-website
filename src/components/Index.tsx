@@ -29,7 +29,7 @@ const SocialLinks = () => (
                 <Instagram className="w-5 h-5" />
             </a>
             <a
-                href="https://x.com/chordy_ai"
+                href="https://x.com/chordyai"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-black hover:opacity-80 transition-opacity transform hover:scale-110"
@@ -50,7 +50,7 @@ const SocialLinks = () => (
 const categories: Category[] = [
     { id: "founder", label: "I'm a Startup Founder" },
     { id: "investor", label: "I'm an Investor / Angel" },
-    { id: "professional", label: "I'm a Working Professional / Freelancer" },
+    { id: "professional", label: "I'm a Professional / Freelancer" },
     { id: "student", label: "I'm a Student / Early Talent" },
     { id: "host", label: "I'm an Event / Community Host" },
 ];
@@ -90,7 +90,7 @@ const Index = () => {
                         >
                             <div className="bg-white rounded-3xl shadow-xl shadow-emerald-100/50 p-8 border border-gray-100">
                                 {/* Logo and Title Row */}
-                                <div className="flex flex-row items-center justify-center gap-4 mb-6">
+                                <div className="flex flex-row items-center justify-center gap-4 mb-3">
                                     <motion.img
                                         src={heroLogo}
                                         alt="Chordy.ai"
@@ -116,11 +116,11 @@ const Index = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.2 }}
                                     >
-                                        <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 mb-2">
-                                            Hi, I'm your AI superconnector.
+                                        <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 mb-2">
+                                            Hi, I'm your AI superconnector
                                         </h2>
                                         <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                                            Connecting you to the right people at the right time.
+                                            Connecting you with right people at right time
                                         </p>
                                     </motion.div>
                                     <p className="text-gray-800 text-base font-medium">
