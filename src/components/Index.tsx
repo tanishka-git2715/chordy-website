@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Linkedin, Instagram, Mail, Twitter } from "lucide-react";
 import heroLogo from "@/assets/hero-logo.png";
 
+// API endpoint - uses relative path for Vercel deployment
+const API_URL = "/api";
+
 
 type Category = {
     id: string;
@@ -64,15 +67,50 @@ const Index = () => {
         categorySpecific: "",
         linkedinId: "",
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleCategorySelect = (category: Category) => {
         setSelectedCategory(category);
         setStep(2);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setStep(3);
+        setIsSubmitting(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`${API_URL}/waitlist`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    category: selectedCategory?.id,
+                    categoryLabel: selectedCategory?.label,
+                    categorySpecific: formData.categorySpecific,
+                    linkedinId: formData.linkedinId,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Success - move to step 3
+                setStep(3);
+            } else {
+                // Handle error from server
+                setError(data.error || 'Failed to join waitlist. Please try again.');
+            }
+        } catch (err) {
+            console.error("Error submitting form: ", err);
+            setError("Network error. Please check your connection and try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -314,11 +352,19 @@ const Index = () => {
                                         />
                                     </div>
 
+                                    {/* Error Message */}
+                                    {error && (
+                                        <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                                            {error}
+                                        </div>
+                                    )}
+
                                     <button
                                         type="submit"
-                                        className="w-full py-4 px-6 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-2xl transition-all duration-200 hover:shadow-lg hover:shadow-emerald-200 mt-2"
+                                        disabled={isSubmitting}
+                                        className="w-full py-4 px-6 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-2xl transition-all duration-200 hover:shadow-lg hover:shadow-emerald-200 mt-2"
                                     >
-                                        Join the Waitlist
+                                        {isSubmitting ? "Joining..." : "Join the Waitlist"}
                                     </button>
                                 </form>
 
