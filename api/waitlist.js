@@ -1,122 +1,16 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { createClient } from '@supabase/supabase-js';
 
-// Define local DB path relative to project root
-// We use process.cwd() because often in Vercel/Next/Node the CWD is the root
-const LOCAL_DB_FILE = join(process.cwd(), 'backend', 'waitlist.json');
+// Initialize Supabase Client
+const getSupabase = () => {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-// Helper to initialize local DB if missing
-const initLocalDB = () => {
-    // Ensure directory exists
-    const dir = dirname(LOCAL_DB_FILE);
-    if (!existsSync(dir)) {
-        try {
-            mkdirSync(dir, { recursive: true });
-        } catch (err) {
-            console.error('Failed to create backend directory:', err);
-        }
+    if (!supabaseUrl || !supabaseKey) {
+        throw new Error('Missing Supabase configuration: SUPABASE_URL and SUPABASE_ANON_KEY are required.');
     }
 
-    if (!existsSync(LOCAL_DB_FILE)) {
-        try {
-            writeFileSync(LOCAL_DB_FILE, JSON.stringify({ waitlist: [] }, null, 2));
-            console.log('Initialized local DB file:', LOCAL_DB_FILE);
-        } catch (err) {
-            console.error('Failed to initialize local DB:', err);
-        }
-    }
+    return createClient(supabaseUrl, supabaseKey);
 };
-
-// Check if Vercel KV is available
-const isKVAvailable = () => {
-    return !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
-};
-
-// Check if running on Vercel
-const isVercel = () => {
-    return !!process.env.VERCEL;
-};
-
-// Helper function to get all waitlist entries
-async function getAllEntries() {
-    try {
-        let entries = [];
-        if (isKVAvailable()) {
-            // Use Vercel KV in production
-            const { kv } = await import('@vercel/kv');
-            const data = await kv.get('waitlist');
-            // Ensure data is an array
-            if (Array.isArray(data)) {
-                entries = data;
-                console.log('Retrieved from KV:', entries.length, 'entries');
-            } else if (data) {
-                console.warn('KV data is not an array, resetting to empty array. Data type:', typeof data);
-                entries = [];
-            } else {
-                console.log('KV is empty, starting with empty array');
-                entries = [];
-            }
-        } else {
-            // Safety check for Vercel deployment without KV
-            if (isVercel()) {
-                console.error('CRITICAL: Running on Vercel but KV is not configured.');
-                console.error('Please set KV_REST_API_URL and KV_REST_API_TOKEN in Vercel Project Settings.');
-                // Return empty array to verify the app doesn't crash, but data is missing
-                return [];
-            }
-
-            // Use local file for development
-            initLocalDB();
-            try {
-                const fileData = readFileSync(LOCAL_DB_FILE, 'utf8');
-                const parsed = JSON.parse(fileData);
-                // Handle both array (legacy) and object (new) formats
-                entries = Array.isArray(parsed) ? parsed : (parsed.waitlist || []);
-                console.log('Retrieved from local file:', entries.length, 'entries');
-            } catch (err) {
-                console.error('Error reading local DB:', err);
-                entries = [];
-            }
-        }
-        return entries;
-    } catch (error) {
-        console.error('Error getting entries:', error);
-        return [];
-    }
-}
-
-// Helper function to save waitlist entries
-async function saveEntries(entries) {
-    try {
-        if (!Array.isArray(entries)) {
-            console.error('Attempted to save non-array entries:', entries);
-            throw new Error('Entries must be an array');
-        }
-
-        if (isKVAvailable()) {
-            // Use Vercel KV in production
-            const { kv } = await import('@vercel/kv');
-            await kv.set('waitlist', entries);
-            console.log('Saved to KV:', entries.length, 'entries');
-        } else {
-            // Safety check for Vercel deployment without KV
-            if (isVercel()) {
-                const errorMsg = 'CRITICAL: Cannot save data. Vercel KV is not configured.';
-                console.error(errorMsg);
-                throw new Error(errorMsg);
-            }
-
-            // Use local file for development
-            initLocalDB();
-            // Save as object to match backend/server.js structure
-            writeFileSync(LOCAL_DB_FILE, JSON.stringify({ waitlist: entries }, null, 2));
-            console.log('Saved to local file:', entries.length, 'entries');
-        }
-    } catch (error) {
-        console.error('Error saving entries:', error);
-        throw error; // Propagate error to API handler
-    }
-}
 
 export default async function handler(req, res) {
     // Enable CORS
@@ -132,15 +26,22 @@ export default async function handler(req, res) {
     }
 
     try {
+        const supabase = getSupabase();
+
         // GET - Retrieve all waitlist entries
         if (req.method === 'GET') {
-            const entries = await getAllEntries();
+            const { data, error } = await supabase
+                .from('waitlist')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
 
             return res.status(200).json({
                 success: true,
-                count: entries.length,
-                data: entries,
-                storage: isKVAvailable() ? 'vercel-kv' : 'local-file'
+                count: data.length,
+                data: data,
+                storage: 'supabase'
             });
         }
 
@@ -148,97 +49,77 @@ export default async function handler(req, res) {
         if (req.method === 'POST') {
             // Robust body parsing
             let body = req.body;
-
-            // If body is string (sometimes happens in certain envs), try to parse it
             if (typeof body === 'string') {
                 try {
                     body = JSON.parse(body);
                 } catch (e) {
-                    console.error('Failed to parse request body string:', e);
                     return res.status(400).json({ error: 'Invalid JSON body' });
                 }
             }
 
-            // If body is missing or empty
             if (!body) {
-                console.error('Request body is missing');
                 return res.status(400).json({ error: 'Missing request body' });
             }
 
             const { name, email, category, categoryLabel, categorySpecific, linkedinId } = body;
 
-            console.log('Received waitlist submission:', { name, email, category });
-
             // Validation
             if (!name || !email || !category || !categoryLabel) {
-                console.log('Validation failed: missing required fields. Received:', body);
                 return res.status(400).json({
                     error: 'Missing required fields: name, email, category, categoryLabel'
                 });
             }
 
-            // Email validation
+            // Email format validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                console.log('Validation failed: invalid email format');
                 return res.status(400).json({ error: 'Invalid email format' });
             }
 
-            // Get current entries
-            const entries = await getAllEntries();
-            console.log('Current entries count:', entries.length);
+            // Insert into Supabase
+            // Note: Supabase handles unique email constraints if set in DB
+            const { data, error } = await supabase
+                .from('waitlist')
+                .insert([
+                    {
+                        name,
+                        email,
+                        category,
+                        category_label: categoryLabel, // Map to snake_case column
+                        category_specific: categorySpecific || null,
+                        linkedin_id: linkedinId || null
+                        // created_at is handled by default in Postgres
+                    }
+                ])
+                .select();
 
-            // Check for duplicate email
-            const existingEntry = entries.find(entry => entry.email === email);
-            if (existingEntry) {
-                console.log('Duplicate email found:', email);
-                return res.status(409).json({
-                    error: 'This email is already on the waitlist'
-                });
+            if (error) {
+                // Handle unique constraint violation (error code 23505 for Postgres)
+                if (error.code === '23505') {
+                    return res.status(409).json({ error: 'This email is already on the waitlist' });
+                }
+                throw error;
             }
-
-            // Create new entry
-            const newEntry = {
-                id: entries.length + 1,
-                name,
-                email,
-                category,
-                categoryLabel,
-                categorySpecific: categorySpecific || null,
-                linkedinId: linkedinId || null,
-                createdAt: new Date().toISOString()
-            };
-
-            // Add to entries
-            entries.push(newEntry);
-            await saveEntries(entries);
-
-            console.log('Successfully added entry:', newEntry.id);
 
             return res.status(201).json({
                 success: true,
                 message: 'Successfully added to waitlist',
-                id: newEntry.id,
-                storage: isKVAvailable() ? 'vercel-kv' : 'local-file'
+                id: data[0]?.id,
+                storage: 'supabase'
             });
         }
 
-        // Method not allowed
         return res.status(405).json({ error: 'Method not allowed' });
 
     } catch (error) {
-        console.error('Unhandled error in waitlist API:', error);
-        console.error('Error stack:', error.stack);
+        console.error('Waitlist API Error:', error);
 
-        // DEBUG: Expose full error details to help user diagnosis
         return res.status(500).json({
             error: 'Internal server error',
             message: error.message,
-            stack: error.stack, // Exposed for debugging
             env: {
-                hasUrl: !!process.env.KV_REST_API_URL,
-                hasToken: !!process.env.KV_REST_API_TOKEN,
-                isVercel: !!process.env.VERCEL
+                hasUrl: !!process.env.SUPABASE_URL,
+                hasKey: !!process.env.SUPABASE_ANON_KEY
             }
         });
     }
