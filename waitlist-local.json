@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "name": "Persistence Test",
+    "email": "persist@example.com",
+    "category": "Other",
+    "categoryLabel": "Tester",
+    "categorySpecific": null,
+    "linkedinId": null,
+    "createdAt": "2025-12-07T17:45:02.505Z"
+  }
+]

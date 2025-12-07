@@ -1,5 +1,21 @@
-// In-memory storage fallback for local development
-let inMemoryStorage = [];
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { join } from 'path';
+
+// Define local DB path relative to project root
+// We use process.cwd() because often in Vercel/Next/Node the CWD is the root
+const LOCAL_DB_FILE = join(process.cwd(), 'waitlist-local.json');
+
+// Helper to initialize local DB if missing
+const initLocalDB = () => {
+    if (!existsSync(LOCAL_DB_FILE)) {
+        try {
+            writeFileSync(LOCAL_DB_FILE, JSON.stringify([], null, 2));
+            console.log('Initialized local DB file:', LOCAL_DB_FILE);
+        } catch (err) {
+            console.error('Failed to initialize local DB:', err);
+        }
+    }
+};
 
 // Check if Vercel KV is available
 const isKVAvailable = () => {
@@ -20,25 +36,27 @@ async function getAllEntries() {
                 console.log('Retrieved from KV:', entries.length, 'entries');
             } else if (data) {
                 console.warn('KV data is not an array, resetting to empty array. Data type:', typeof data);
-                // If data exists but isn't an array, we might want to preserve it or alerting, 
-                // but for now we'll start fresh to prevent 500s.
-                // Optionally wrap in array if it's a single object? No, let's just be safe.
                 entries = [];
             } else {
                 console.log('KV is empty, starting with empty array');
                 entries = [];
             }
         } else {
-            // Use in-memory storage for local development
-            console.log('Using in-memory storage (local dev):', inMemoryStorage.length, 'entries');
-            entries = inMemoryStorage;
+            // Use local file for development
+            initLocalDB();
+            try {
+                const fileData = readFileSync(LOCAL_DB_FILE, 'utf8');
+                entries = JSON.parse(fileData);
+                console.log('Retrieved from local file:', entries.length, 'entries');
+            } catch (err) {
+                console.error('Error reading local DB:', err);
+                entries = [];
+            }
         }
         return entries;
     } catch (error) {
         console.error('Error getting entries:', error);
-        // Fallback to in-memory storage if KV fails
-        console.log('Falling back to in-memory storage due to error');
-        return inMemoryStorage;
+        return [];
     }
 }
 
@@ -56,15 +74,13 @@ async function saveEntries(entries) {
             await kv.set('waitlist', entries);
             console.log('Saved to KV:', entries.length, 'entries');
         } else {
-            // Use in-memory storage for local development
-            inMemoryStorage = entries;
-            console.log('Saved to in-memory storage:', entries.length, 'entries');
+            // Use local file for development
+            initLocalDB();
+            writeFileSync(LOCAL_DB_FILE, JSON.stringify(entries, null, 2));
+            console.log('Saved to local file:', entries.length, 'entries');
         }
     } catch (error) {
         console.error('Error saving entries:', error);
-        // Fallback to in-memory storage if KV fails
-        inMemoryStorage = entries;
-        console.log('Fell back to in-memory storage due to error');
     }
 }
 
@@ -90,7 +106,7 @@ export default async function handler(req, res) {
                 success: true,
                 count: entries.length,
                 data: entries,
-                storage: isKVAvailable() ? 'vercel-kv' : 'in-memory'
+                storage: isKVAvailable() ? 'vercel-kv' : 'local-file'
             });
         }
 
@@ -169,7 +185,7 @@ export default async function handler(req, res) {
                 success: true,
                 message: 'Successfully added to waitlist',
                 id: newEntry.id,
-                storage: isKVAvailable() ? 'vercel-kv' : 'in-memory'
+                storage: isKVAvailable() ? 'vercel-kv' : 'local-file'
             });
         }
 
