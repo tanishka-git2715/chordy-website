@@ -88,7 +88,7 @@ const Index = () => {
                             transition={{ duration: 0.4 }}
                             className="w-full max-w-md"
                         >
-                            <div className="bg-white rounded-3xl shadow-xl shadow-emerald-100/50 p-8 border-2 border-gray-300">
+                            <div className="bg-white rounded-3xl shadow-xl p-8 border-2 border-gray-300">
                                 {/* Logo and Title Row */}
                                 <div className="flex flex-row items-center justify-center gap-4 mb-3">
                                     <motion.img
@@ -154,7 +154,7 @@ const Index = () => {
                             transition={{ duration: 0.4 }}
                             className="w-full max-w-md"
                         >
-                            <div className="bg-white rounded-3xl shadow-xl shadow-emerald-100/50 p-8 border-2 border-gray-300">
+                            <div className="bg-white rounded-3xl shadow-xl p-8 border-2 border-gray-300">
                                 {/* Logo */}
                                 <div className="flex justify-center mb-6">
                                     <img
@@ -267,7 +267,7 @@ const Index = () => {
                             transition={{ duration: 0.4 }}
                             className="w-full max-w-md"
                         >
-                            <div className="bg-white rounded-3xl shadow-xl shadow-emerald-100/50 p-8 border-2 border-gray-300 text-center">
+                            <div className="bg-white rounded-3xl shadow-xl p-8 border-2 border-gray-300 text-center">
                                 {/* Logo */}
                                 <div className="flex justify-center mb-6">
                                     <img
