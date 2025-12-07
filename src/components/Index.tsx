@@ -114,9 +114,9 @@ const Index = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-white via-emerald-50/30 to-white flex flex-col">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-emerald-100/50 to-cyan-50 flex flex-col relative overflow-hidden">
             {/* Main Content */}
-            <div className="flex-1 flex items-center justify-center px-4 py-8">
+            <div className="flex-1 flex items-center justify-center px-4 py-8 relative z-10">
                 <AnimatePresence mode="wait">
                     {step === 1 && (
                         <motion.div
