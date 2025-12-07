@@ -229,10 +229,17 @@ export default async function handler(req, res) {
     } catch (error) {
         console.error('Unhandled error in waitlist API:', error);
         console.error('Error stack:', error.stack);
+
+        // DEBUG: Expose full error details to help user diagnosis
         return res.status(500).json({
-            error: 'Internal server error. Please try again.',
-            message: error.message, // Include message for debugging
-            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            error: 'Internal server error',
+            message: error.message,
+            stack: error.stack, // Exposed for debugging
+            env: {
+                hasUrl: !!process.env.KV_REST_API_URL,
+                hasToken: !!process.env.KV_REST_API_TOKEN,
+                isVercel: !!process.env.VERCEL
+            }
         });
     }
 }
