@@ -156,10 +156,10 @@ const Index = () => {
                                         transition={{ delay: 0.2 }}
                                     >
                                         <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 mb-2">
-                                            Hi, I'm your AI superconnector
+                                            Hi, I'm Chordy — your AI Superconnector
                                         </h2>
                                         <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                                            Connecting you with right people at right time
+                                            I'm here to help you find the right people, make warm introductions, and grow your opportunities effortlessly.
                                         </p>
                                     </motion.div>
                                     <p className="text-gray-800 text-base font-medium">
