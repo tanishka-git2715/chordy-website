@@ -155,7 +155,7 @@ const Index = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.2 }}
                                     >
-                                        <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 mb-2">
+                                        <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 mb-2">
                                             The Future of Smart Networking starts here
                                         </h2>
                                         <p className="text-gray-600 text-sm leading-relaxed mb-4">
