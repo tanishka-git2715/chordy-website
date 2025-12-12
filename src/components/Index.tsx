@@ -149,7 +149,7 @@ const Index = () => {
                                 </div>
 
                                 {/* Header Message */}
-                                <div className="text-center mb-8">
+                                <div className="text-left mb-8">
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
